@@ -5,12 +5,13 @@ from .models import UserInfo
 # Create your views here.
 
 
+# 用户主页
 def index(request):
     name = request.session.get('uname', None)
     if name is None:
         context = {'style2': 'display:none'}
     else:
-        context = {'name': name, 'style1': 'display:none'}
+        context = {'title': '天天生鲜-主页', 'name': name, 'style1': 'display:none'}
     return render(request, 'shopping1/index.html', context)
 
 
