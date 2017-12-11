@@ -17,7 +17,7 @@ def index(request):
 
 # 用户注册
 def register(request):
-    return render(request, 'shopping1/register.html')
+    return render(request, 'shopping1/register.html', {'title': '天天生鲜-用户注册'})
 
 
 def register_handle(request):
@@ -41,9 +41,9 @@ def register_handle(request):
 def login(request):
     name = request.session.get('uname', '')
     if name is '':
-        context = {'name': '', 'check': ''}
+        context = {'title': '天天生鲜-用户登录', 'name': '', 'check': ''}
     else:
-        context = {'name': name, 'check': 'checked'}
+        context = {'title': '天天生鲜-用户登录', 'name': name, 'check': 'checked'}
     return render(request, 'shopping1/login.html', context)
 
 

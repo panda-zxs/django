@@ -10,9 +10,9 @@ class UserInfo(models.Model):
     upwd = models.CharField(max_length=40, null=False, blank=False)
     ucretime = models.DateTimeField()
     uemail = models.CharField(max_length=40)
-    utelephone = models.CharField(max_length=20)
-    uaddress = models.CharField(max_length=100)
-    uzipcode = models.CharField(max_length=6)
+    utelephone = models.CharField(max_length=20, null=True, blank=True)
+    uaddress = models.CharField(max_length=100, null=True, blank=True)
+    uzipcode = models.CharField(max_length=6, null=True, blank=True)
     isDelete = models.BooleanField(default=False)
 
 
