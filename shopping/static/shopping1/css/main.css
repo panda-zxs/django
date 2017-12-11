@@ -504,13 +504,22 @@ html,body{height:100%}
 }
 
 .left_menu_con ul li{
+	height: 40px;
 	line-height:40px;
 	text-align:center;
 	font-size:14px;
+
 }
 
-.left_menu_con ul li a{
+.left_menu_con ul li input{
+	display: inline-block;
 	color:#666;
+	width: 200px;
+	height:40px;
+	border:0px;
+}
+.left_menu_con ul li input.btn11{
+	background-color: #e8e8e8;
 }
 
 .left_menu_con ul li .active{
@@ -522,6 +531,10 @@ html,body{height:100%}
 	width:980px;
 	float:right;
 	min-height:500px;
+	display: none;
+}
+div.btnbox{
+	display: block;
 }
 
 .w980{

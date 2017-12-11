@@ -1,0 +1,24 @@
+{%extends 'shopping1/index.html'%}
+{% load staticfiles %}
+{% block index-body%}
+<div class="search_bar clearfix">
+		<a href="/index/" class="logo fl"><img src="{%static 'shopping1/images/logo.png'%}"></a>
+		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;用户中心</div>
+		<div class="search_con fr">
+			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+		</div>
+</div>
+<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul id="btn">
+				<li><input type="button" value="· 个人信息" class="btn11"></li>
+				<li><input type="button" value="· 全部订单" ></li>
+				<li><input type="button" value="· 收获地址" ></li>
+			</ul>
+		</div>
+
+{% endblock index-body%}
+{% block user-body %}
+{% endblock user-body %}

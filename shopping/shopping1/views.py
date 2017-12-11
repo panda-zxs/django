@@ -6,10 +6,11 @@ from .models import UserInfo
 
 
 # 用户主页
+# (商品多的话可以使用ajax异步加载，通过滚动条的位置判断是否要加载)
 def index(request):
     name = request.session.get('uname', None)
     if name is None:
-        context = {'style2': 'display:none'}
+        context = {'title': '天天生鲜-主页','style2': 'display:none'}
     else:
         context = {'title': '天天生鲜-主页', 'name': name, 'style1': 'display:none'}
     return render(request, 'shopping1/index.html', context)
@@ -20,6 +21,7 @@ def register(request):
     return render(request, 'shopping1/register.html', {'title': '天天生鲜-用户注册'})
 
 
+# 用户注册逻辑
 def register_handle(request):
 
     import time
@@ -47,6 +49,7 @@ def login(request):
     return render(request, 'shopping1/login.html', context)
 
 
+# 用户登录逻辑判断
 def login_handle(request):
     name = request.POST['username'] + 'abc'
     pwd = request.POST['pwd'] + 'abc'
@@ -66,6 +69,18 @@ def login_handle(request):
         return redirect('/index')
 
 
+# 注销用户逻辑
 def login_out(request):
     del request.session['uname']
     return redirect('/index')
+
+
+# 用户中心页面
+def user_center(request):
+    name = request.session.get('uname', None)
+    if name is None:
+        context = {'title': '天天生鲜-用户中心', 'style2': 'display:none'}
+    else:
+        context = {'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    return render(request, 'shopping1/user_center_info.html', context)
+
