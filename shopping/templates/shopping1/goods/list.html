@@ -1,0 +1,18 @@
+{% extends 'shopping1/goods/base_list.html'%}
+{% load staticfiles%}
+{%block list-body%}
+			<ul class="goods_type_list clearfix">
+				{% for i in page %}
+				<li>
+					<a href="detail.html"><img src="/static/shopping1/images/goods/{{i.imageaddress}}.jpg"></a>
+					<h4><a href="detail.html">{{i.name}}</a></h4>
+					<div class="operate">
+						<span class="prize">￥{{i.prices}}</span>
+						<span class="unit">{{i.prices}}/{{i.unit}}</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+				{%endfor%}
+			</ul>
+{%endblock list-body%}

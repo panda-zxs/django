@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 import hashlib
-from .models import UserInfo
+from .models import *
+from django.core.paginator import *
 # Create your views here.
 
 
@@ -10,7 +11,7 @@ from .models import UserInfo
 def index(request):
     name = request.session.get('uname', None)
     if name is None:
-        context = {'title': '天天生鲜-主页','style2': 'display:none'}
+        context = {'title': '天天生鲜-主页', 'style2': 'display:none'}
     else:
         context = {'title': '天天生鲜-主页', 'name': name, 'style1': 'display:none'}
     return render(request, 'shopping1/index.html', context)
@@ -82,5 +83,22 @@ def user_center(request):
         context = {'title': '天天生鲜-用户中心', 'style2': 'display:none'}
     else:
         context = {'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
-    return render(request, 'shopping1/user_center_info.html', context)
+    return render(request, 'shopping1/user/user_center_info.html', context)
 
+
+# 商品列表
+def goods_list(request, id, index):
+    a = GoodsInfo.objects.filter(imageaddress__contains=id)
+    b = GoodsInfo.objects.filter(imageaddress__contains="fruit")
+    recommend = {'recommend1': b.get(name='柠檬'), 'recommend2': b.get(name='玫瑰香葡萄')}
+    print(b.get(name='柠檬').unit)
+    name = request.session.get('uname', None)
+    if name is None:
+        context = {'title': '天天生鲜-用户中心', 'style2': 'display:none'}
+    else:
+        context = {'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    context.update(recommend)
+    p = Paginator(a, 10)
+    page = p.page(int(index))
+    context.update({'page': page, 'id': id})
+    return render(request, 'shopping1/goods/list.html', context)

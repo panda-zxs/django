@@ -163,7 +163,8 @@ html,body{height:100%}
 
 .main_wrap{width:1200px;margin:0 auto;}
 .l_wrap{width:200px;}
-.r_wrap{width:980px;}
+.r_wrap{width:980px; height:635px}
+.main_wrap .r_wrap .btn11{height: 500px; display: inline-block;}
 
 
 /* 新品推荐样式 */
@@ -216,15 +217,17 @@ html,body{height:100%}
 /* 分页样式 */
 
 .pagenation{height:32px;text-align:center;font-size:0;margin:30px auto;}
-.pagenation a{display:inline-block;border:1px solid #d2d2d2;background-color:#f8f6f7;font-size:12px;padding:7px 10px;color:#666;margin:5px}
-
+.pagenation a,.pagenation p{display:inline-block;border:1px solid #d2d2d2;font-size:12px;padding:7px 10px;color:#666;margin:5px}
+.pagenation a{background-color:#f8f6f7}
+.pagenation p{background-color:#cccccc}
 .pagenation .active{background-color:#fff;color:#43a200}
 
 
 /* 商品详情样式 */
 .goods_detail_con{
 	width:1198px;
-	height:398px;
+	height:3
+	98px;
 	border:1px solid #ededed;
 	margin:0 auto 20px;
 }

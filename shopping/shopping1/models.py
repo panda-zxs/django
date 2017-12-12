@@ -1,8 +1,7 @@
 from django.db import models
 
-# Create your models here.
 
-
+# 用户信息
 class UserInfo(models.Model):
     class Meta:
         db_table = 'userinfo'
@@ -16,6 +15,7 @@ class UserInfo(models.Model):
     isDelete = models.BooleanField(default=False)
 
 
+# 收获地址
 class UserShipping(models.Model):
     class Meta:
         db_table = 'usership'
@@ -25,8 +25,10 @@ class UserShipping(models.Model):
     address4 = models.CharField(max_length=100)
     address5 = models.CharField(max_length=100)
     address6 = models.CharField(max_length=100)
+    name = models.ForeignKey(UserInfo)
 
 
+# 收货人信息
 class ShippingName(models.Model):
     class Meta:
         db_table = 'shipname'
@@ -36,3 +38,34 @@ class ShippingName(models.Model):
     ushipname4 = models.CharField(max_length=20)
     ushipname5 = models.CharField(max_length=20)
     ushipname6 = models.CharField(max_length=20)
+    name = models.ForeignKey(UserInfo)
+
+
+# 商品分类
+class GoodsType(models.Model):
+    class Meta:
+        db_table = 'goodstype'
+    name = models.CharField(max_length=40,)
+    type = models.ForeignKey('self', null=True, blank=True,)
+    isDelete = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+
+# 详细商品
+class GoodsInfo(models.Model):
+    class Meta:
+        db_table = 'goods'
+    name = models.CharField(max_length=30, blank=True,)
+    prices = models.CharField(max_length=10, blank=True)
+    unit = models.CharField(max_length=5, blank=True, default="500g")
+    purchasetimes = models.CharField(max_length=10, default=0, null=True, blank=True)
+    commenttimes = models.CharField(max_length=10, default=0, null=True, blank=True)
+    clickvolume = models.CharField(max_length=10, default=0, null=True, blank=True)
+    imageaddress = models.CharField(max_length=30, default=0, null=True, blank=True)
+    type = models.ForeignKey(GoodsType)
+    isDelete = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
