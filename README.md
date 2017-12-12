@@ -1,2 +1,2 @@
 # django
-django制作
+django制作简单的电商网站
