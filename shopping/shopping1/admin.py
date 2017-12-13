@@ -5,7 +5,7 @@ from .models import *
 
 class GoodsInfoAdmin(admin.TabularInline):
     model = GoodsInfo
-    extra = 5
+    extra = 0
 
 
 class GoodsTypeAdmin(admin.ModelAdmin):

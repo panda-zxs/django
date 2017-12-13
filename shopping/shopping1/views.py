@@ -9,11 +9,13 @@ from django.core.paginator import *
 # 用户主页
 # (商品多的话可以使用ajax异步加载，通过滚动条的位置判断是否要加载)
 def index(request):
+    type = GoodsType.objects.filter(typenumber__iregex=r'^[0-9]{1}$').order_by('typenumber')
     name = request.session.get('uname', None)
     if name is None:
         context = {'title': '天天生鲜-主页', 'style2': 'display:none'}
     else:
         context = {'title': '天天生鲜-主页', 'name': name, 'style1': 'display:none'}
+    context.update({'type': type})
     return render(request, 'shopping1/index.html', context)
 
 
@@ -88,17 +90,37 @@ def user_center(request):
 
 # 商品列表
 def goods_list(request, id, index):
-    a = GoodsInfo.objects.filter(imageaddress__contains=id)
-    b = GoodsInfo.objects.filter(imageaddress__contains="fruit")
+    types = GoodsType.objects.filter(typenumber__iregex=r'^[0-9]{1}$').order_by('typenumber')
+    c = GoodsType.objects.get(typenumber=id)
+    a = GoodsInfo.objects.filter(productnumber__startswith=id)
+    b = GoodsInfo.objects.filter(productnumber__startswith='1')
     recommend = {'recommend1': b.get(name='柠檬'), 'recommend2': b.get(name='玫瑰香葡萄')}
-    print(b.get(name='柠檬').unit)
     name = request.session.get('uname', None)
     if name is None:
-        context = {'title': '天天生鲜-用户中心', 'style2': 'display:none'}
+        context = {'list': c, 'title': '天天生鲜-用户中心', 'style2': 'display:none'}
     else:
-        context = {'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+        context = {'list': c, 'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
     context.update(recommend)
     p = Paginator(a, 10)
     page = p.page(int(index))
-    context.update({'page': page, 'id': id})
+    context.update({'page': page, 'id': id, 'types': types})
     return render(request, 'shopping1/goods/list.html', context)
+
+
+# 商品详细页
+
+def goods_detail(request, id):
+    types = GoodsType.objects.filter(typenumber__iregex=r'^[0-9]{1}$').order_by('typenumber')
+    c = GoodsType.objects.get(typenumber=id[:1])
+    a = GoodsInfo.objects.get(productnumber=id)
+    a.clickvolume += 1
+    a.save()
+    b = GoodsInfo.objects.filter(productnumber__startswith='1')
+    recommend = {'recommend1': b.get(name='柠檬'), 'recommend2': b.get(name='玫瑰香葡萄')}
+    name = request.session.get('uname', None)
+    if name is None:
+        context = {'types': types, 'type': c, 'list': a, 'title': '天天生鲜-用户中心', 'style2': 'display:none'}
+    else:
+        context = {'types': types, 'type': c, 'list': a, 'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    context.update(recommend)
+    return render(request, 'shopping1/goods/detail.html', context)

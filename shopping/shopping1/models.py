@@ -47,6 +47,7 @@ class GoodsType(models.Model):
         db_table = 'goodstype'
     name = models.CharField(max_length=40,)
     type = models.ForeignKey('self', null=True, blank=True,)
+    typenumber = models.CharField(max_length=6, default=0000)
     isDelete = models.BooleanField(default=False)
 
     def __str__(self):
@@ -58,12 +59,18 @@ class GoodsInfo(models.Model):
     class Meta:
         db_table = 'goods'
     name = models.CharField(max_length=30, blank=True,)
-    prices = models.CharField(max_length=10, blank=True)
+    prices = models.DecimalField(max_digits=5, decimal_places=2)
     unit = models.CharField(max_length=5, blank=True, default="500g")
-    purchasetimes = models.CharField(max_length=10, default=0, null=True, blank=True)
-    commenttimes = models.CharField(max_length=10, default=0, null=True, blank=True)
-    clickvolume = models.CharField(max_length=10, default=0, null=True, blank=True)
-    imageaddress = models.CharField(max_length=30, default=0, null=True, blank=True)
+    # 购买次数
+    purchase = models.IntegerField(default=0)
+    # 评论数
+    commenttimes = models.IntegerField(default=0)
+    # 点击量
+    clickvolume = models.IntegerField(default=0)
+    # 商品编号
+    productnumber = models.CharField(max_length=10, default=0000)
+    # 商品简介
+    description = models.TextField(default=1)
     type = models.ForeignKey(GoodsType)
     isDelete = models.BooleanField(default=False)
 

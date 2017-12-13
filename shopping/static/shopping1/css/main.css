@@ -91,12 +91,12 @@ html,body{height:100%}
 .subnav li a{display:block;height:44px;line-height:44px;text-indent:71px;font-size:14px;color:#333}
 .subnav li a:hover{color:#ff8800}
 
-.subnav li .fruit{background:url(../images/icons.png) 28px 0px no-repeat;}
-.subnav li .seafood{background:url(../images/icons.png) 28px -43px no-repeat;}
-.subnav li .meet{background:url(../images/icons.png) 28px -86px no-repeat;}
-.subnav li .egg{background:url(../images/icons.png) 28px -132px no-repeat;}
-.subnav li .vegetables{background:url(../images/icons.png) 28px -174px no-repeat;}
-.subnav li .ice{background:url(../images/icons.png) 28px -220px no-repeat;}
+.subnav li .type1{background:url(../images/icons.png) 28px 0px no-repeat;}
+.subnav li .type2{background:url(../images/icons.png) 28px -43px no-repeat;}
+.subnav li .type3{background:url(../images/icons.png) 28px -86px no-repeat;}
+.subnav li .type4{background:url(../images/icons.png) 28px -132px no-repeat;}
+.subnav li .type5{background:url(../images/icons.png) 28px -174px no-repeat;}
+.subnav li .type6{background:url(../images/icons.png) 28px -220px no-repeat;}
 
 
 .slide{width:760px;height:270px;position:relative;overflow:hidden;}

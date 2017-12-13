@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shopping1', '0003_auto_20171212_1431'),
+        ('shopping1', '0002_goodsinfo_description'),
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='goodsinfo',
-            name='imageaddress',
-            field=models.CharField(null=True, max_length=30, default=0, blank=True),
+            name='description',
+            field=models.TextField(default=1),
         ),
     ]
