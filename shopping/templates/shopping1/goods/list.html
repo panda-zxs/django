@@ -1,5 +1,8 @@
 {% extends 'shopping1/goods/base_list.html'%}
 {% load staticfiles%}
+{% block head%}
+<script type="text/javascript" src="/static/shopping1/js/list.js"></script>
+{% endblock head%}
 {% block list-bread %}
 		<span>></span>
 		<span style="color: darkorange">{{list.name}}</span>
@@ -7,10 +10,20 @@
 {% block list-body2 %}
 		<div class="r_wrap fr clearfix">
 
-			<div class="sort_bar">
-				<a href="#" class="active">默认</a>
-				<a href="#">价格</a>
-				<a href="#">人气</a>
+			<div class="sort_bar" id="sort_bar">
+				{% if sort == '1' %}
+				<a href="/goods/list/{{list.typenumber}}/1_1" class="{{active}}">默认</a>
+				<a href="/goods/list/{{list.typenumber}}/2_1" class="">价格</a>
+				<a href="/goods/list/{{list.typenumber}}/3_1" class="">人气</a>
+				{% elif sort == '2' %}
+				<a href="/goods/list/{{list.typenumber}}/1_1" class="">默认</a>
+				<a href="/goods/list/{{list.typenumber}}/2_1" class="{{active}}">价格</a>
+				<a href="/goods/list/{{list.typenumber}}/3_1" class="">人气</a>
+				{% else %}
+				<a href="/goods/list/{{list.typenumber}}/1_1" class="">默认</a>
+				<a href="/goods/list/{{list.typenumber}}/2_1" class="">价格</a>
+				<a href="/goods/list/{{list.typenumber}}/3_1" class="{{active}}">人气</a>
+				{% endif %}
 			</div>
 			<div class="btn11">
 				<div>
@@ -33,7 +46,7 @@
 			<div>
 				<div class="pagenation">
 					{% if page.has_previous %}
-					<a href="/goods/list/{{id}}/{{page.number|add:'-1'}}/">&lt;上一页</a>
+					<a href="/goods/list/{{id}}/{{sort}}_{{page.number|add:'-1'}}/">&lt;上一页</a>
 					{% else %}
 					<p>&lt;上一页</p>
 					{% endif %}
@@ -41,11 +54,11 @@
 					{% if i == page.number %}
 					<p>{{i}}</p>
 					{% else %}
-					<a href="/goods/list/{{id}}/{{i}}/" class="active">{{i}}</a>
+					<a href="/goods/list/{{id}}/{{sort}}_{{i}}/" class="active">{{i}}</a>
 					{% endif %}
 				{% endfor %}
 					{% if page.has_next %}
-					<a href="/goods/list/{{id}}/{{page.number|add:'1'}}">下一页&gt;</a>
+					<a href="/goods/list/{{id}}/{{sort}}_{{page.number|add:'1'}}">下一页&gt;</a>
 					{% else %}
 					<p>下一页&gt;</p>
 					{% endif %}

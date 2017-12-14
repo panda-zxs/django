@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import hashlib
 from .models import *
 from django.core.paginator import *
+from . import user_decorator
 # Create your views here.
 
 
@@ -54,6 +55,7 @@ def login(request):
 
 # 用户登录逻辑判断
 def login_handle(request):
+    red = request.COOKIES.get('url', '/index')
     name = request.POST['username'] + 'abc'
     pwd = request.POST['pwd'] + 'abc'
     hname = hashlib.md5(name.encode('utf-8')).hexdigest()
@@ -69,7 +71,7 @@ def login_handle(request):
             request.session.set_expiry(0)
         else:
             request.session.set_expiry(None)
-        return redirect('/index')
+        return redirect(red)
 
 
 # 注销用户逻辑
@@ -79,48 +81,69 @@ def login_out(request):
 
 
 # 用户中心页面
+@user_decorator.login
 def user_center(request):
+    goods_id = request.COOKIES.get('ids')
+    ids = goods_id.split(',')
+    goods_id = GoodsInfo.objects.filter(productnumber__in=ids)
+    print(ids)
     name = request.session.get('uname', None)
-    if name is None:
-        context = {'title': '天天生鲜-用户中心', 'style2': 'display:none'}
-    else:
-        context = {'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    context = {'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    context.update({'goods_id': goods_id})
     return render(request, 'shopping1/user/user_center_info.html', context)
 
 
 # 商品列表
-def goods_list(request, id, index):
+@user_decorator.login
+def goods_list(request, id, sort, index):
     types = GoodsType.objects.filter(typenumber__iregex=r'^[0-9]{1}$').order_by('typenumber')
     c = GoodsType.objects.get(typenumber=id)
     a = GoodsInfo.objects.filter(productnumber__startswith=id)
+    if sort == '1':
+        s = a
+    elif sort == '2':
+        s = a.order_by('prices')
+    else:
+        s = a.order_by('clickvolume').reverse()
+    # 商品推荐列表
     b = GoodsInfo.objects.filter(productnumber__startswith='1')
     recommend = {'recommend1': b.get(name='柠檬'), 'recommend2': b.get(name='玫瑰香葡萄')}
     name = request.session.get('uname', None)
-    if name is None:
-        context = {'list': c, 'title': '天天生鲜-用户中心', 'style2': 'display:none'}
-    else:
-        context = {'list': c, 'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    context = {'active': 'active', 'sort': sort, 'list': c, 'title': '天天生鲜-商品列表', 'name': name, 'style1': 'display:none'}
     context.update(recommend)
-    p = Paginator(a, 10)
+    p = Paginator(s, 10)
     page = p.page(int(index))
     context.update({'page': page, 'id': id, 'types': types})
     return render(request, 'shopping1/goods/list.html', context)
 
 
 # 商品详细页
-
+@user_decorator.login
 def goods_detail(request, id):
+    # 显示路径信息
     types = GoodsType.objects.filter(typenumber__iregex=r'^[0-9]{1}$').order_by('typenumber')
-    c = GoodsType.objects.get(typenumber=id[:1])
+    # 储存点击量
     a = GoodsInfo.objects.get(productnumber=id)
     a.clickvolume += 1
     a.save()
+    # 商品推荐列表
     b = GoodsInfo.objects.filter(productnumber__startswith='1')
     recommend = {'recommend1': b.get(name='柠檬'), 'recommend2': b.get(name='玫瑰香葡萄')}
+    # 用户验证
     name = request.session.get('uname', None)
-    if name is None:
-        context = {'types': types, 'type': c, 'list': a, 'title': '天天生鲜-用户中心', 'style2': 'display:none'}
-    else:
-        context = {'types': types, 'type': c, 'list': a, 'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    context = {'types': types, 'list': a, 'title': '天天生鲜-商品详情', 'name': name, 'style1': 'display:none'}
     context.update(recommend)
-    return render(request, 'shopping1/goods/detail.html', context)
+
+    response = render(request, 'shopping1/goods/detail.html', context,)
+    goods_id = request.COOKIES.get('ids', '')
+    if goods_id != '':
+        ids = goods_id.split(',')
+        if id not in ids:
+            ids.insert(0, id)
+        if len(ids) > 5:
+            ids.pop()
+        goods_id = ','.join(ids)
+    else:
+        goods_id = str(id)
+    response.set_cookie('ids', goods_id)
+    return response
