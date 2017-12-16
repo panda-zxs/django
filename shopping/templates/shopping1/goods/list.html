@@ -31,11 +31,11 @@
 					{% for i in page %}
 						<li>
 							<a href="/goods/detail/{{i.productnumber}}"><img src="/static/shopping1/images/goods/{{i.productnumber}}.jpg"></a>
-							<h4><a href="detail.html">{{i.name}}</a></h4>
+							<h4><a href="detail.html" id="{{i}}name">{{i.name}}</a></h4>
 							<div class="operate">
 								<span class="prize">￥{{i.prices}}</span>
 								<span class="unit">{{i.prices}}/{{i.unit}}</span>
-								<a href="#" class="add_goods" title="加入购物车"></a>
+								<a href="/goods/detail/{{i.productnumber}}" class="add_goods" title="加入购物车"></a>
 							</div>
 						</li>
 

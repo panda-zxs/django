@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse
 import hashlib
 from .models import *
 from django.core.paginator import *
 from . import user_decorator
+
 # Create your views here.
 
 
@@ -12,11 +13,12 @@ from . import user_decorator
 def index(request):
     type = GoodsType.objects.filter(typenumber__iregex=r'^[0-9]{1}$').order_by('typenumber')
     name = request.session.get('uname', None)
+    number = len(CartInfo.objects.all())
     if name is None:
         context = {'title': '天天生鲜-主页', 'style2': 'display:none'}
     else:
         context = {'title': '天天生鲜-主页', 'name': name, 'style1': 'display:none'}
-    context.update({'type': type})
+    context.update({'type': type, 'number': number})
     return render(request, 'shopping1/index.html', context)
 
 
@@ -29,8 +31,7 @@ def register(request):
 def register_handle(request):
 
     import time
-    name = request.POST['user_name'] + 'abc'
-    login_name = hashlib.md5(name.encode('utf-8')).hexdigest()
+    login_name = request.POST['user_name']
     pwd = request.POST['pwd'] + 'abc'
     login_pwd = hashlib.md5(pwd.encode('utf-8')).hexdigest()
     email = request.POST['email'] + 'abc'
@@ -56,17 +57,15 @@ def login(request):
 # 用户登录逻辑判断
 def login_handle(request):
     red = request.COOKIES.get('url', '/index')
-    name = request.POST['username'] + 'abc'
+    name = request.POST['username']
     pwd = request.POST['pwd'] + 'abc'
-    hname = hashlib.md5(name.encode('utf-8')).hexdigest()
     hped = hashlib.md5(pwd.encode('utf-8')).hexdigest()
-    if not UserInfo.objects.filter(uname=hname):
+    if not UserInfo.objects.filter(uname=name):
         return HttpResponse('无此用户')
     elif not UserInfo.objects.filter(upwd=hped):
         return HttpResponse('错误密码')
     else:
-        request.session['uname'] = request.POST['username']
-        print(request.POST.get('check', None))
+        request.session['uname'] = name
         if request.POST.get('check', None) is None:
             request.session.set_expiry(0)
         else:
@@ -83,12 +82,12 @@ def login_out(request):
 # 用户中心页面
 @user_decorator.login
 def user_center(request):
-    goods_id = request.COOKIES.get('ids')
+    goods_id = request.COOKIES.get('ids', '')
     ids = goods_id.split(',')
     goods_id = GoodsInfo.objects.filter(productnumber__in=ids)
     print(ids)
     name = request.session.get('uname', None)
-    context = {'title': '天天生鲜-用户中心', 'name': name, 'style1': 'display:none'}
+    context = {'title': '用户中心', 'name': name, 'style1': 'display:none'}
     context.update({'goods_id': goods_id})
     return render(request, 'shopping1/user/user_center_info.html', context)
 
@@ -99,6 +98,7 @@ def goods_list(request, id, sort, index):
     types = GoodsType.objects.filter(typenumber__iregex=r'^[0-9]{1}$').order_by('typenumber')
     c = GoodsType.objects.get(typenumber=id)
     a = GoodsInfo.objects.filter(productnumber__startswith=id)
+    number = len(CartInfo.objects.all())
     if sort == '1':
         s = a
     elif sort == '2':
@@ -113,7 +113,7 @@ def goods_list(request, id, sort, index):
     context.update(recommend)
     p = Paginator(s, 10)
     page = p.page(int(index))
-    context.update({'page': page, 'id': id, 'types': types})
+    context.update({'page': page, 'id': id, 'types': types, 'number': number})
     return render(request, 'shopping1/goods/list.html', context)
 
 
@@ -126,12 +126,14 @@ def goods_detail(request, id):
     a = GoodsInfo.objects.get(productnumber=id)
     a.clickvolume += 1
     a.save()
+    # 购物车数量
+    number = len(CartInfo.objects.all())
     # 商品推荐列表
     b = GoodsInfo.objects.filter(productnumber__startswith='1')
     recommend = {'recommend1': b.get(name='柠檬'), 'recommend2': b.get(name='玫瑰香葡萄')}
     # 用户验证
     name = request.session.get('uname', None)
-    context = {'types': types, 'list': a, 'title': '天天生鲜-商品详情', 'name': name, 'style1': 'display:none'}
+    context = {'number': number, 'types': types, 'list': a, 'title': '天天生鲜-商品详情', 'name': name, 'style1': 'display:none'}
     context.update(recommend)
 
     response = render(request, 'shopping1/goods/detail.html', context,)
@@ -147,3 +149,51 @@ def goods_detail(request, id):
         goods_id = str(id)
     response.set_cookie('ids', goods_id)
     return response
+
+
+# 购物车
+@user_decorator.login
+def cart(request):
+
+    # 用户验证
+    name = request.session.get('uname', None)
+    id = UserInfo.objects.get(uname=name).id
+    list = CartInfo.objects.filter(userinfo_id=id)
+    context = {'title': '购物车', 'name': name, 'style1': 'display:none', 'list': list}
+    return render(request, 'shopping1/user/cart.html', context)
+
+
+def cart_handle(request):
+    num = request.GET['number']
+    name = request.GET['name']
+    user = request.session.get('uname')
+    user_name = UserInfo.objects.get(uname=user)
+    goods_name = GoodsInfo.objects.get(name=name)
+    l = CartInfo.objects.filter(userinfo=user_name).filter(goodsinfo=goods_name)
+    if len(l) == 0:
+        CartInfo.objects.create(userinfo=user_name, goodsinfo=goods_name, number=num)
+    else:
+        for i in l:
+            i.number = i.number+int(num)
+            i.save()
+    number = len(CartInfo.objects.all())
+    ret = {'ret1': '添加成功', 'ret2': number}
+    print(1)
+    return JsonResponse(ret)
+
+
+def cart_account(request):
+    print(1)
+    print(2)
+    goods = request.GET['goods']
+
+    list = []
+    for i in goods:
+        id = i['id']
+        num = i['num']
+        l = CartInfo.objects.get(id=id)
+        l.number = num
+        l.save()
+        list.append(CartInfo.objects.get(id=id))
+    context = {'list': list}
+    return redirect('shopping1/user/place_order.html', context)

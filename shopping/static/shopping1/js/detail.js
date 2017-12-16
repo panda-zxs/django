@@ -16,7 +16,7 @@ function minus() {
 
 }
 $(function () {
-  $('.num_show').blur(function () {
+    $('.num_show').blur(function () {
       var num = parseInt($('.num_show').val());
       var price = parseInt($('#gprice').text());
       if (num <1){
@@ -25,5 +25,17 @@ $(function () {
       }
       var total = num*price;
       $('#gtotal').text(total.toFixed(2)+'元');
-  });
+    });
 });
+function sum(){
+    var number = $('.num_show').val()
+    var name = $('#name').html()
+    $.get('/cart_handle/', {'number':number,'name':name}, function(ret){
+        alert(ret['ret1'])
+        $('#number').html(ret['ret2'])
+    });
+
+}
+
+
+

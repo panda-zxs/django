@@ -3,7 +3,7 @@
 {%block head%}
 <script type="text/javascript" src="{%static 'shopping1/js/user-center.js'%}"></script>
 {%endblock head%}
-{% block index-body%}
+{% block user-body%}
 {{block.super}}
 		<div id="btnbox">
 			<div class="right_content clearfix btnbox">
@@ -22,11 +22,11 @@
 						{% for i in goods_id %}
 						<li>
 							<a href="/goods/detail/{{i.productnumber}}"><img src="/static/shopping1/images/goods/{{i.productnumber}}.jpg'%}"></a>
-							<h4><a href="/goods/detail/{{i.productnumber}}">{{i.name}}</a></h4>
+							<h4><a href="/goods/detail/{{i.productnumber}}" id="name">{{i.name}}</a></h4>
 							<div class="operate">
 								<span class="prize">￥{{i.prices}}</span>
 								<span class="unit">{{i.prices}}/{{i.unit}}</span>
-								<a href="#" class="add_goods" title="加入购物车"></a>
+								<a href="/goods/detail/{{i.productnumber}}" class="add_goods" title="加入购物车"></a>
 							</div>
 						</li>
 						{% endfor %}
@@ -142,4 +142,4 @@
 			</div>
 		</div>
 	</div>
-{% endblock index-body %}
+{% endblock user-body %}

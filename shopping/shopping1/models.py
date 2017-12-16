@@ -14,6 +14,9 @@ class UserInfo(models.Model):
     uzipcode = models.CharField(max_length=6, null=True, blank=True)
     isDelete = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.uname
+
 
 # 收获地址
 class UserShipping(models.Model):
@@ -73,6 +76,17 @@ class GoodsInfo(models.Model):
     description = models.TextField(default=1)
     type = models.ForeignKey(GoodsType)
     isDelete = models.BooleanField(default=False)
+    members = models.ManyToManyField(UserInfo, through='CartInfo', through_fields=('goodsinfo', 'userinfo'))
 
     def __str__(self):
         return self.name
+
+
+# 购物车
+class CartInfo(models.Model):
+    class Meta:
+        db_table = 'cartinfo'
+    userinfo = models.ForeignKey(UserInfo)
+    goodsinfo = models.ForeignKey(GoodsInfo)
+    number = models.IntegerField(default=0)
+

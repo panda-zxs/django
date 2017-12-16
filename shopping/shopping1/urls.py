@@ -12,4 +12,8 @@ urlpatterns = [
     url(r'^user_center/$', views.user_center),
     url(r'^goods/list/(?P<id>\d+)/(?P<sort>\d+)_(?P<index>\d+)/$', views.goods_list),
     url(r'^goods/detail/(\d+)$', views.goods_detail),
+    url(r'^cart/$', views.cart),
+    url(r'^cart_handle/$', views.cart_handle),
+    url(r'^cart_account/$', views.cart_account),
+
 ]
