@@ -1,5 +1,19 @@
 $(function(){
+    FinalPrices()
     // 全选
+    $('.cart_list_td .col08 a').click(function() {
+		var id = $(this).parent().siblings('.col01').children('input').prop('id')
+        $.get('/cart_del/', {'id': id}, function () {
+            alert('删除成功')
+        });
+		var count = parseInt($('.total_count em').text());
+		count -= 1;
+		$('.total_count em').text(count);
+		$('.settlements .col03 b').text(count);
+		$(this).parent().parent().remove();
+		FinalPrices()
+	});
+
     $('#all').click(function(){
         var flage =$(this).is(":checked");
         $("input[type=checkbox]").each(function(){
@@ -86,7 +100,6 @@ $(function(){
 
     function FinalPrices() {
         sumPrice = 0;
-
         $('.cart_list_td .col01 input').each(function () {
             if ($(this).prop('checked')){
                 var prices = $(this).parent().siblings('.col07').text();
@@ -94,28 +107,36 @@ $(function(){
                 var price = parseFloat(prices.match(patt));
                 sumPrice += price;
             }
-            return $('.settlements .col03 em').text(sumPrice.toFixed(2)+'元')
+
         })
-    }
+        return $('.settlements .col03 em').text(sumPrice.toFixed(2)+'元')
+    };
 
    	$('.settlements .col04 a').click(function() {
         goods = [];
         $('.cart_list_td .col01 input').each(function () {
-            // 如果没有被选中，把没有被选中的商品id传给后台
+            // 如果没有被选中，把没有被选中的购物车id传给后台
             id = $(this).prop('id')
             count = $(this).parents('.col01').siblings('.col06').children('.num_add').children('input').val();
-            if ($(this).prop('checked')) {
-                goods.push({
-                    'id': id,
-                    'count': count,
-                    'isChecked': 0
-                });
+           	if (!$(this).prop('checked')) {
+				goods.push({
+					'id': id,
+					'count': count,
+					'isChecked': 0
+				});
 
-            }
-            $.get('/cart_account/', {'goods': goods}, function (ret) {
+			} else {
 
-            })
+				goods.push({
+					'id': id,
+					'count': count,
+					'isChecked': 1
+				});
+
+			}
         })
+        $.get('/cart_account/', {'goods': goods}, function (ret) {
 
+        })
     });
 })

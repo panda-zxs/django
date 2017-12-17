@@ -89,4 +89,5 @@ class CartInfo(models.Model):
     userinfo = models.ForeignKey(UserInfo)
     goodsinfo = models.ForeignKey(GoodsInfo)
     number = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 

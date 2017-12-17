@@ -163,6 +163,7 @@ def cart(request):
     return render(request, 'shopping1/user/cart.html', context)
 
 
+@user_decorator.login
 def cart_handle(request):
     num = request.GET['number']
     name = request.GET['name']
@@ -171,10 +172,11 @@ def cart_handle(request):
     goods_name = GoodsInfo.objects.get(name=name)
     l = CartInfo.objects.filter(userinfo=user_name).filter(goodsinfo=goods_name)
     if len(l) == 0:
-        CartInfo.objects.create(userinfo=user_name, goodsinfo=goods_name, number=num)
+        CartInfo.objects.create(userinfo=user_name, goodsinfo=goods_name, number=num, price=goods_name.prices*int(num))
     else:
         for i in l:
-            i.number = i.number+int(num)
+            i.number = int(num)
+            i.price = i.goodsinfo.prices*int(num)
             i.save()
     number = len(CartInfo.objects.all())
     ret = {'ret1': '添加成功', 'ret2': number}
@@ -182,18 +184,53 @@ def cart_handle(request):
     return JsonResponse(ret)
 
 
+@user_decorator.login
 def cart_account(request):
-    print(1)
-    print(2)
-    goods = request.GET['goods']
-
+    print(111)
     list = []
-    for i in goods:
-        id = i['id']
-        num = i['num']
-        l = CartInfo.objects.get(id=id)
-        l.number = num
-        l.save()
-        list.append(CartInfo.objects.get(id=id))
+    num = int(len(request.GET)/3)
+    for i in range(num):
+        id = request.GET['goods[' + str(i) + '][id]']
+
+        isChecked = request.GET['goods[' + str(i) + '][isChecked]']
+
+        if int(isChecked) == 1:
+
+            cart = CartInfo.objects.get(id=int(id))
+            list.append(id)
+
+            count = request.GET['goods[' + str(i) + '][count]']
+            cart.number = int(count)
+            cart.price = int(count) * cart.goodsinfo.prices
+            print('----')
+            print(cart.price)
+            print('----')
+            cart.save()
+        else:
+            cart = CartInfo.objects.get(id=int(id))
+            cart.delete()
+
     context = {'list': list}
-    return redirect('shopping1/user/place_order.html', context)
+    print(context)
+    return HttpResponse()
+
+
+@user_decorator.login
+def cart_order(request):
+    name = request.session.get('uname')
+    id = UserInfo.objects.get(uname=name).id
+    list = CartInfo.objects.filter(userinfo_id=id)
+    prices = 0
+    for i in list:
+        a = int(i.number)*i.goodsinfo.prices
+        prices += a
+    return render(request, 'shopping1/user/place_order.html', {'name': name, 'style1': 'display:none', 'list': list, 'title': '提交订单', 'prices': prices})
+
+@user_decorator.login
+def cart_del(request):
+    print(1)
+    id = request.GET['id']
+    print(id)
+    cart = CartInfo.objects.get(id=id)
+    cart.delete()
+    return HttpResponse()
